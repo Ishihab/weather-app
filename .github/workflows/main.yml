@@ -23,5 +23,21 @@ jobs:
         context: .
         push: true
         tags: 0142365870/weather-app:latest
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy to ec2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ sectertS.EC2_USER }}
+          key: ${{ secrets.EC2_PRIVETE_KEY }}
+          script: |
+            docker pull 0142365870/weather-app:latest
+            docker stop weather-app || true
+            docker rm weather-app || true
+            docker run --name weather-app -d -p 80:80 0142365870/weather-app:latest
        
          
